@@ -1,8 +1,8 @@
 specVersion: 0.0.5
 description: Test Carbon Registry Graph
-repository: https://github.com/graphprotocol/example-subgraphs #update this
+repository: https://github.com/graphprotocol/example-subgraphs
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum
     name: CarbonContractRegistry
@@ -19,11 +19,11 @@ dataSources:
         - ProjectCreated
       abis:
         - name: CarbonContractRegistry
-          file: ./abis/CarbonContractRegistry.json
+          file: CarbonContractRegistry/abis/CarbonContractRegistry.json
       eventHandlers:
         - event: ProjectCreated(indexed uint256,indexed address,string)
           handler: handleProjectCreated
-      file: ./src/carbon-contract-registry.ts
+      file: CarbonContractRegistry/CarbonContractRegistry.wasm
 templates:
   - kind: ethereum
     name: Project
@@ -45,7 +45,7 @@ templates:
         - RetirementCertificateHolder
       abis:
         - name: Project
-          file: ./abis/Project.json
+          file: Project/abis/Project.json
       eventHandlers:
         - event: ExPostCreated(indexed uint256,uint256,uint256,uint256,string)
           handler: handleExPostCreated
@@ -53,5 +53,4 @@ templates:
           handler: handleExPostVerifiedAndMinted
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
-
-      file: ./src/project.ts
+      file: templates/Project/Project.wasm
