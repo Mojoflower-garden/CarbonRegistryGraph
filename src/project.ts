@@ -6,6 +6,8 @@ import {
 import { ExPost, Project, Holder, ExPostHolder } from "../generated/schema";
 import { BigInt, Bytes, Address } from "@graphprotocol/graph-ts";
 
+export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
+
 export function handleExPostCreated(event: ExPostCreatedEvent): void {
   let project = Project.load(event.address);
   if (project == null) return;
@@ -50,12 +52,34 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
     holder = new Holder(Bytes.fromHexString(event.params.to.toHexString()));
     holder.address = event.params.to;
   }
+  if (event.params.from.toHexString() !== ADDRESS_ZERO) {
+    let holderSender = Holder.load(
+      Bytes.fromHexString(event.params.from.toHexString())
+    );
+    if (holderSender === null) {
+      holderSender = new Holder(
+        Bytes.fromHexString(event.params.from.toHexString())
+      );
+      holderSender.address = event.params.from;
+    }
+    let exPostHolderSender = ExPostHolder.load(
+      getPostHolderEntityId(holderSender.id, exPostEntity.id)
+    );
+    if (exPostHolderSender !== null) {
+      exPostHolderSender.amount = exPostHolderSender.amount.minus(
+        event.params.value
+      );
+      exPostHolderSender.save();
+    }
+    holderSender.save();
+  }
+
   let exPostHolder = ExPostHolder.load(
-    getPostHolderEntityId(event.params.to, event.params.id)
+    getPostHolderEntityId(holder.id, exPostEntity.id)
   );
   if (exPostHolder === null) {
     exPostHolder = new ExPostHolder(
-      getPostHolderEntityId(event.params.to, event.params.id)
+      getPostHolderEntityId(holder.id, exPostEntity.id)
     );
     exPostHolder.exPost = exPostEntityId;
     exPostHolder.holder = holder.id;
@@ -66,14 +90,11 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
   holder.save();
 }
 
-function getPostHolderEntityId(
-  holderAddress: Address,
-  exPostId: BigInt
-): Bytes {
+function getPostHolderEntityId(holderId: Bytes, exPostId: Bytes): Bytes {
   return Bytes.fromHexString(
-    holderAddress
+    holderId
       .toHexString()
-      .concat("-")
+      .concat("--")
       .concat(exPostId.toHexString())
   );
 }
