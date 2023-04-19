@@ -329,8 +329,12 @@ export class RetiredVintage__Params {
     return this._event.parameters[2].value.toBigInt();
   }
 
+  get nftTokenId(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
   get data(): Bytes {
-    return this._event.parameters[3].value.toBytes();
+    return this._event.parameters[4].value.toBytes();
   }
 }
 
@@ -409,32 +413,6 @@ export class RoleRevoked__Params {
 
   get sender(): Address {
     return this._event.parameters[2].value.toAddress();
-  }
-}
-
-export class SignedRetire extends ethereum.Event {
-  get params(): SignedRetire__Params {
-    return new SignedRetire__Params(this);
-  }
-}
-
-export class SignedRetire__Params {
-  _event: SignedRetire;
-
-  constructor(event: SignedRetire) {
-    this._event = event;
-  }
-
-  get from(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get tokenId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get amount(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
   }
 }
 
@@ -1542,6 +1520,41 @@ export class Project extends ethereum.SmartContract {
     );
   }
 
+  retire(tokenId: BigInt, amount: BigInt, data: Bytes): BigInt {
+    let result = super.call(
+      "retire",
+      "retire(uint256,uint256,bytes):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(tokenId),
+        ethereum.Value.fromUnsignedBigInt(amount),
+        ethereum.Value.fromBytes(data)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_retire(
+    tokenId: BigInt,
+    amount: BigInt,
+    data: Bytes
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "retire",
+      "retire(uint256,uint256,bytes):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(tokenId),
+        ethereum.Value.fromUnsignedBigInt(amount),
+        ethereum.Value.fromBytes(data)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   supportsInterface(interfaceId: Bytes): boolean {
     let result = super.call(
       "supportsInterface",
@@ -2430,6 +2443,10 @@ export class RetireCall__Outputs {
   constructor(call: RetireCall) {
     this._call = call;
   }
+
+  get nftTokenId(): BigInt {
+    return this._call.outputValues[0].value.toBigInt();
+  }
 }
 
 export class RetireFromSignatureCall extends ethereum.Call {
@@ -2457,6 +2474,10 @@ export class RetireFromSignatureCall__Inputs {
     return changetype<RetireFromSignatureCallPayloadStruct>(
       this._call.inputValues[1].value.toTuple()
     );
+  }
+
+  get data(): Bytes {
+    return this._call.inputValues[2].value.toBytes();
   }
 }
 

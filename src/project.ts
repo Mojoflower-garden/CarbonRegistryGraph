@@ -2,8 +2,15 @@ import {
   ExPostCreated as ExPostCreatedEvent,
   ExPostVerifiedAndMinted as ExPostVerifiedAndMintedEvent,
   TransferSingle as TransferSingleEvent,
+  RetiredVintage as RetiredVintageEvent,
 } from "../generated/templates/Project/Project";
-import { ExPost, Project, Holder, ExPostHolder } from "../generated/schema";
+import {
+  ExPost,
+  Project,
+  Holder,
+  ExPostHolder,
+  RetirementCertificate,
+} from "../generated/schema";
 import { BigInt, Bytes, Address } from "@graphprotocol/graph-ts";
 
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
@@ -47,12 +54,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
   let exPostEntity = ExPost.load(exPostEntityId);
   if (!exPostEntity) return;
 
-  let holder = Holder.load(Bytes.fromHexString(event.params.to.toHexString()));
-  if (holder === null) {
-    holder = new Holder(Bytes.fromHexString(event.params.to.toHexString()));
-    holder.address = event.params.to;
-  }
-  if (event.params.from.toHexString() !== ADDRESS_ZERO) {
+  if (event.params.from != Address.fromHexString(ADDRESS_ZERO)) {
     let holderSender = Holder.load(
       Bytes.fromHexString(event.params.from.toHexString())
     );
@@ -61,6 +63,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
         Bytes.fromHexString(event.params.from.toHexString())
       );
       holderSender.address = event.params.from;
+      holderSender.retiredAmount = BigInt.zero();
     }
     let exPostHolderSender = ExPostHolder.load(
       getPostHolderEntityId(holderSender.id, exPostEntity.id)
@@ -74,20 +77,71 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
     holderSender.save();
   }
 
-  let exPostHolder = ExPostHolder.load(
-    getPostHolderEntityId(holder.id, exPostEntity.id)
-  );
-  if (exPostHolder === null) {
-    exPostHolder = new ExPostHolder(
+  if (event.params.to != Address.fromHexString(ADDRESS_ZERO)) {
+    let holder = Holder.load(
+      Bytes.fromHexString(event.params.to.toHexString())
+    );
+    if (holder === null) {
+      holder = new Holder(Bytes.fromHexString(event.params.to.toHexString()));
+      holder.address = event.params.to;
+      holder.retiredAmount = BigInt.zero();
+    }
+    let exPostHolder = ExPostHolder.load(
       getPostHolderEntityId(holder.id, exPostEntity.id)
     );
-    exPostHolder.exPost = exPostEntityId;
-    exPostHolder.holder = holder.id;
-    exPostHolder.amount = BigInt.zero();
+    if (exPostHolder === null) {
+      exPostHolder = new ExPostHolder(
+        getPostHolderEntityId(holder.id, exPostEntity.id)
+      );
+      exPostHolder.exPost = exPostEntityId;
+      exPostHolder.holder = holder.id;
+      exPostHolder.amount = BigInt.zero();
+    }
+    exPostHolder.amount = exPostHolder.amount.plus(event.params.value);
+    exPostHolder.save();
+    holder.save();
+  } else {
+    // BURN!
+    exPostEntity.supply = exPostEntity.supply.minus(event.params.value);
+    exPostEntity.save();
   }
-  exPostHolder.amount = exPostHolder.amount.plus(event.params.value);
-  exPostHolder.save();
+}
+
+export function handleRetirement(event: RetiredVintageEvent): void {
+  const exPostEntityId = getHexExPostId(event.params.tokenId, event.address);
+  let exPostEntity = ExPost.load(exPostEntityId);
+  if (!exPostEntity) return;
+  exPostEntity.retiredAmount = exPostEntity.retiredAmount.plus(
+    event.params.amount
+  );
+  exPostEntity.save();
+
+  let holder = Holder.load(
+    Bytes.fromHexString(event.params.account.toHexString())
+  );
+  if (holder === null) {
+    holder = new Holder(
+      Bytes.fromHexString(event.params.account.toHexString())
+    );
+    holder.address = event.params.account;
+  }
+  holder.retiredAmount = holder.retiredAmount.plus(event.params.amount);
+  const retirementNftId = getHexExPostId(
+    event.params.nftTokenId,
+    event.address
+  );
+  let retirementEntity = new RetirementCertificate(retirementNftId);
+
+  retirementEntity.tokenId = event.params.nftTokenId;
+  retirementEntity.amount = event.params.amount;
+  retirementEntity.retiree = holder.id;
+  retirementEntity.exPost = exPostEntityId;
+  retirementEntity.project = exPostEntity.project;
+  retirementEntity.holder = holder.id;
+
   holder.save();
+  retirementEntity.save();
+  exPostEntity.save();
 }
 
 function getPostHolderEntityId(holderId: Bytes, exPostId: Bytes): Bytes {

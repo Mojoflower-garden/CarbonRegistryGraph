@@ -394,9 +394,13 @@ export class RetirementCertificate extends Entity {
     this.set("exPost", Value.fromBytes(value));
   }
 
-  get holders(): Array<Bytes> {
-    let value = this.get("holders");
-    return value!.toBytesArray();
+  get holder(): Bytes {
+    let value = this.get("holder");
+    return value!.toBytes();
+  }
+
+  set holder(value: Bytes) {
+    this.set("holder", Value.fromBytes(value));
   }
 
   get project(): Bytes {
@@ -449,6 +453,15 @@ export class Holder extends Entity {
     this.set("address", Value.fromBytes(value));
   }
 
+  get retiredAmount(): BigInt {
+    let value = this.get("retiredAmount");
+    return value!.toBigInt();
+  }
+
+  set retiredAmount(value: BigInt) {
+    this.set("retiredAmount", Value.fromBigInt(value));
+  }
+
   get exPostAmounts(): Array<Bytes> {
     let value = this.get("exPostAmounts");
     return value!.toBytesArray();
@@ -459,8 +472,8 @@ export class Holder extends Entity {
     return value!.toBytesArray();
   }
 
-  get retirementCertificateHolders(): Array<Bytes> {
-    let value = this.get("retirementCertificateHolders");
+  get retirementCertificates(): Array<Bytes> {
+    let value = this.get("retirementCertificates");
     return value!.toBytesArray();
   }
 }
@@ -566,74 +579,6 @@ export class ExAnteHolder extends Entity {
 
   set exAnte(value: Bytes) {
     this.set("exAnte", Value.fromBytes(value));
-  }
-
-  get holder(): Bytes {
-    let value = this.get("holder");
-    return value!.toBytes();
-  }
-
-  set holder(value: Bytes) {
-    this.set("holder", Value.fromBytes(value));
-  }
-
-  get amount(): BigInt {
-    let value = this.get("amount");
-    return value!.toBigInt();
-  }
-
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
-  }
-}
-
-export class RetirementCertificateHolder extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(
-      id != null,
-      "Cannot save RetirementCertificateHolder entity without an ID"
-    );
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type RetirementCertificateHolder must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set(
-        "RetirementCertificateHolder",
-        id.toBytes().toHexString(),
-        this
-      );
-    }
-  }
-
-  static load(id: Bytes): RetirementCertificateHolder | null {
-    return changetype<RetirementCertificateHolder | null>(
-      store.get("RetirementCertificateHolder", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get retirementCertificate(): Bytes {
-    let value = this.get("retirementCertificate");
-    return value!.toBytes();
-  }
-
-  set retirementCertificate(value: Bytes) {
-    this.set("retirementCertificate", Value.fromBytes(value));
   }
 
   get holder(): Bytes {

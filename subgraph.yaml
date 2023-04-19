@@ -8,7 +8,7 @@ dataSources:
     name: CarbonContractRegistry
     network: mumbai
     source:
-      address: "0xe486b4Cc2C33d50203CeF302Be4d639F2E5b8094"
+      address: "0x7C799B6CB6d025445e9Ebc91b99648e97e43175B"
       abi: CarbonContractRegistry
       startBlock: 34451308
     mapping:
@@ -42,7 +42,6 @@ templates:
         - Holder
         - ExPostHolder
         - ExAnteHolder
-        - RetirementCertificateHolder
       abis:
         - name: Project
           file: ./abis/Project.json
@@ -53,5 +52,7 @@ templates:
           handler: handleExPostVerifiedAndMinted
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
+        - event: RetiredVintage(indexed address,indexed uint256,uint256,uint256,bytes)
+          handler: handleRetirement
 
       file: ./src/project.ts

@@ -47,17 +47,17 @@ type RetirementCertificate @entity {
   amount: BigInt! # uint256
   retiree: Holder!
   exPost: ExPost!
-  holders: [RetirementCertificateHolder!]!
-    @derivedFrom(field: "retirementCertificate")
+  holder: Holder!
   project: Project!
 }
 
 type Holder @entity {
   id: Bytes!
   address: Bytes! # address
+  retiredAmount: BigInt! # uint256
   exPostAmounts: [ExPostHolder!]! @derivedFrom(field: "holder")
   exAnteAmounts: [ExAnteHolder!]! @derivedFrom(field: "holder")
-  retirementCertificateHolders: [RetirementCertificateHolder!]!
+  retirementCertificates: [RetirementCertificate!]!
     @derivedFrom(field: "holder")
 }
 
@@ -71,13 +71,6 @@ type ExPostHolder @entity {
 type ExAnteHolder @entity {
   id: Bytes!
   exAnte: ExAnte!
-  holder: Holder!
-  amount: BigInt! # uint256
-}
-
-type RetirementCertificateHolder @entity {
-  id: Bytes!
-  retirementCertificate: RetirementCertificate!
   holder: Holder!
   amount: BigInt! # uint256
 }
