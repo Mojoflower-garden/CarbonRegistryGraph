@@ -96,6 +96,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
       exPostHolder.exPost = exPostEntityId;
       exPostHolder.holder = holder.id;
       exPostHolder.amount = BigInt.zero();
+      exPostHolder.retiredAmount = BigInt.zero();
     }
     exPostHolder.amount = exPostHolder.amount.plus(event.params.value);
     exPostHolder.save();
@@ -111,6 +112,7 @@ export function handleRetirement(event: RetiredVintageEvent): void {
   const exPostEntityId = getHexExPostId(event.params.tokenId, event.address);
   let exPostEntity = ExPost.load(exPostEntityId);
   if (!exPostEntity) return;
+
   exPostEntity.retiredAmount = exPostEntity.retiredAmount.plus(
     event.params.amount
   );
@@ -126,6 +128,15 @@ export function handleRetirement(event: RetiredVintageEvent): void {
     holder.address = event.params.account;
   }
   holder.retiredAmount = holder.retiredAmount.plus(event.params.amount);
+  let exPostHolder = ExPostHolder.load(
+    getPostHolderEntityId(holder.id, exPostEntity.id)
+  );
+  if (exPostHolder !== null) {
+    exPostHolder.retiredAmount = exPostHolder.retiredAmount.plus(
+      event.params.amount
+    );
+    exPostHolder.save();
+  }
   const retirementNftId = getHexExPostId(
     event.params.nftTokenId,
     event.address

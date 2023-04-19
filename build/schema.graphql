@@ -66,6 +66,7 @@ type ExPostHolder @entity {
   exPost: ExPost!
   holder: Holder!
   amount: BigInt! # uint256
+  retiredAmount: BigInt! # uint256
 }
 
 type ExAnteHolder @entity {

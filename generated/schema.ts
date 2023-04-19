@@ -537,6 +537,15 @@ export class ExPostHolder extends Entity {
   set amount(value: BigInt) {
     this.set("amount", Value.fromBigInt(value));
   }
+
+  get retiredAmount(): BigInt {
+    let value = this.get("retiredAmount");
+    return value!.toBigInt();
+  }
+
+  set retiredAmount(value: BigInt) {
+    this.set("retiredAmount", Value.fromBigInt(value));
+  }
 }
 
 export class ExAnteHolder extends Entity {
