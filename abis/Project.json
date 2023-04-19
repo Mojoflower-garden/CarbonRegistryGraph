@@ -133,16 +133,22 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "exAnteTokenId",
+        "type": "uint256"
       },
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "exPostTokenId",
         "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
       },
       {
         "indexed": false,
@@ -263,6 +269,47 @@
       }
     ],
     "name": "ExchangeAnteForPost",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "signer",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct signatureGenericPayload",
+        "name": "payload",
+        "type": "tuple"
+      }
+    ],
+    "name": "GenericSignatureValid",
     "type": "event"
   },
   {
@@ -409,37 +456,6 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "SignedTransfer",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "operator",
         "type": "address"
       },
@@ -469,6 +485,62 @@
       }
     ],
     "name": "TransferBatch",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "signer",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct signatureTransferPayload",
+        "name": "payload",
+        "type": "tuple"
+      }
+    ],
+    "name": "TransferSignatureValid",
     "type": "event"
   },
   {
@@ -595,8 +667,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -609,8 +680,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -623,8 +693,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -637,8 +706,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -651,8 +719,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -665,8 +732,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -679,8 +745,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -693,8 +758,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -707,8 +771,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -721,8 +784,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -735,8 +797,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -749,8 +810,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -802,8 +862,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -827,8 +886,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -841,8 +899,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -861,8 +918,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -881,8 +937,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -921,8 +976,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -941,8 +995,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -961,8 +1014,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1004,8 +1056,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1029,8 +1080,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -1043,8 +1093,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -1057,8 +1106,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -1071,8 +1119,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -1085,8 +1132,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -1099,8 +1145,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1162,8 +1207,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1266,8 +1310,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1304,8 +1347,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -1318,8 +1360,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1338,8 +1379,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1370,8 +1410,7 @@
     "name": "upgradeToAndCall",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function",
-    "payable": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1390,8 +1429,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1438,8 +1476,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1731,8 +1768,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1792,8 +1828,7 @@
     "name": "transferFromSignature",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function",
-    "payable": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1888,8 +1923,7 @@
       }
     ],
     "stateMutability": "payable",
-    "type": "function",
-    "payable": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -1935,7 +1969,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   }
 ]

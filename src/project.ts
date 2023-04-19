@@ -3,6 +3,7 @@ import {
   ExPostVerifiedAndMinted as ExPostVerifiedAndMintedEvent,
   TransferSingle as TransferSingleEvent,
   RetiredVintage as RetiredVintageEvent,
+  ExAnteMinted as ExAnteMintedEvent,
 } from "../generated/templates/Project/Project";
 import {
   ExPost,
@@ -10,6 +11,8 @@ import {
   Holder,
   ExPostHolder,
   RetirementCertificate,
+  ExAnte,
+  ExAnteHolder,
 } from "../generated/schema";
 import { BigInt, Bytes, Address } from "@graphprotocol/graph-ts";
 
@@ -50,61 +53,122 @@ export function handleExPostVerifiedAndMinted(
 }
 
 export function handleTransferSingle(event: TransferSingleEvent): void {
-  const exPostEntityId = getHexExPostId(event.params.id, event.address);
-  let exPostEntity = ExPost.load(exPostEntityId);
-  if (!exPostEntity) return;
-
-  if (event.params.from != Address.fromHexString(ADDRESS_ZERO)) {
-    let holderSender = Holder.load(
-      Bytes.fromHexString(event.params.from.toHexString())
-    );
-    if (holderSender === null) {
-      holderSender = new Holder(
+  const tokenEntityId = getHexExPostId(event.params.id, event.address);
+  let exPostEntity = ExPost.load(tokenEntityId);
+  if (exPostEntity) {
+    // This token is exPost credit
+    if (event.params.from != Address.fromHexString(ADDRESS_ZERO)) {
+      let holderSender = Holder.load(
         Bytes.fromHexString(event.params.from.toHexString())
       );
-      holderSender.address = event.params.from;
-      holderSender.retiredAmount = BigInt.zero();
-    }
-    let exPostHolderSender = ExPostHolder.load(
-      getPostHolderEntityId(holderSender.id, exPostEntity.id)
-    );
-    if (exPostHolderSender !== null) {
-      exPostHolderSender.amount = exPostHolderSender.amount.minus(
-        event.params.value
+      if (holderSender === null) {
+        holderSender = new Holder(
+          Bytes.fromHexString(event.params.from.toHexString())
+        );
+        holderSender.address = event.params.from;
+        holderSender.retiredAmount = BigInt.zero();
+      }
+      let exPostHolderSender = ExPostHolder.load(
+        getPostHolderEntityId(holderSender.id, exPostEntity.id)
       );
-      exPostHolderSender.save();
+      if (exPostHolderSender !== null) {
+        exPostHolderSender.amount = exPostHolderSender.amount.minus(
+          event.params.value
+        );
+        exPostHolderSender.save();
+      }
+      holderSender.save();
     }
-    holderSender.save();
-  }
 
-  if (event.params.to != Address.fromHexString(ADDRESS_ZERO)) {
-    let holder = Holder.load(
-      Bytes.fromHexString(event.params.to.toHexString())
-    );
-    if (holder === null) {
-      holder = new Holder(Bytes.fromHexString(event.params.to.toHexString()));
-      holder.address = event.params.to;
-      holder.retiredAmount = BigInt.zero();
-    }
-    let exPostHolder = ExPostHolder.load(
-      getPostHolderEntityId(holder.id, exPostEntity.id)
-    );
-    if (exPostHolder === null) {
-      exPostHolder = new ExPostHolder(
+    if (event.params.to != Address.fromHexString(ADDRESS_ZERO)) {
+      let holder = Holder.load(
+        Bytes.fromHexString(event.params.to.toHexString())
+      );
+      if (holder === null) {
+        holder = new Holder(Bytes.fromHexString(event.params.to.toHexString()));
+        holder.address = event.params.to;
+        holder.retiredAmount = BigInt.zero();
+      }
+      let exPostHolder = ExPostHolder.load(
         getPostHolderEntityId(holder.id, exPostEntity.id)
       );
-      exPostHolder.exPost = exPostEntityId;
-      exPostHolder.holder = holder.id;
-      exPostHolder.amount = BigInt.zero();
-      exPostHolder.retiredAmount = BigInt.zero();
+      if (exPostHolder === null) {
+        exPostHolder = new ExPostHolder(
+          getPostHolderEntityId(holder.id, exPostEntity.id)
+        );
+        exPostHolder.exPost = tokenEntityId;
+        exPostHolder.holder = holder.id;
+        exPostHolder.amount = BigInt.zero();
+        exPostHolder.retiredAmount = BigInt.zero();
+      }
+      exPostHolder.amount = exPostHolder.amount.plus(event.params.value);
+      exPostHolder.save();
+      holder.save();
+    } else {
+      // BURN!
+      exPostEntity.supply = exPostEntity.supply.minus(event.params.value);
+      exPostEntity.save();
     }
-    exPostHolder.amount = exPostHolder.amount.plus(event.params.value);
-    exPostHolder.save();
-    holder.save();
   } else {
-    // BURN!
-    exPostEntity.supply = exPostEntity.supply.minus(event.params.value);
-    exPostEntity.save();
+    // This token is exAnte credit
+    let exAnteEntity = ExAnte.load(tokenEntityId);
+    if (exAnteEntity) {
+      if (event.params.from != Address.fromHexString(ADDRESS_ZERO)) {
+        let holderSender = Holder.load(
+          Bytes.fromHexString(event.params.from.toHexString())
+        );
+        if (holderSender === null) {
+          holderSender = new Holder(
+            Bytes.fromHexString(event.params.from.toHexString())
+          );
+          holderSender.address = event.params.from;
+          holderSender.retiredAmount = BigInt.zero();
+        }
+
+        let exAnteHolderSender = ExAnteHolder.load(
+          getPostHolderEntityId(holderSender.id, exAnteEntity.id)
+        );
+        if (exAnteHolderSender !== null) {
+          exAnteHolderSender.amount = exAnteHolderSender.amount.minus(
+            event.params.value
+          );
+          exAnteHolderSender.save();
+        }
+        holderSender.save();
+      }
+
+      if (event.params.to != Address.fromHexString(ADDRESS_ZERO)) {
+        let holder = Holder.load(
+          Bytes.fromHexString(event.params.to.toHexString())
+        );
+        if (holder === null) {
+          holder = new Holder(
+            Bytes.fromHexString(event.params.to.toHexString())
+          );
+          holder.address = event.params.to;
+          holder.retiredAmount = BigInt.zero();
+        }
+
+        let exAnteHolder = ExAnteHolder.load(
+          getPostHolderEntityId(holder.id, exAnteEntity.id)
+        );
+        if (exAnteHolder === null) {
+          exAnteHolder = new ExAnteHolder(
+            getPostHolderEntityId(holder.id, exAnteEntity.id)
+          );
+          exAnteHolder.exAnte = tokenEntityId;
+          exAnteHolder.holder = holder.id;
+          exAnteHolder.amount = BigInt.zero();
+        }
+        exAnteHolder.amount = exAnteHolder.amount.plus(event.params.value);
+        exAnteHolder.save();
+        holder.save();
+      } else {
+        // BURN!
+        exAnteEntity.supply = exAnteEntity.supply.minus(event.params.value);
+        exAnteEntity.save();
+      }
+    }
   }
 }
 
@@ -153,6 +217,28 @@ export function handleRetirement(event: RetiredVintageEvent): void {
   holder.save();
   retirementEntity.save();
   exPostEntity.save();
+}
+
+export function handleExAnteMinted(event: ExAnteMintedEvent): void {
+  let exAnteEntity = ExAnte.load(
+    getHexExPostId(event.params.exAnteTokenId, event.address)
+  );
+  let exPostEntity = ExPost.load(
+    getHexExPostId(event.params.exPostTokenId, event.address)
+  );
+  if (exPostEntity === null) return;
+  if (exAnteEntity === null) {
+    exAnteEntity = new ExAnte(
+      getHexExPostId(event.params.exAnteTokenId, event.address)
+    );
+    exAnteEntity.tokenId = event.params.exAnteTokenId;
+    exAnteEntity.supply = event.params.amount;
+    exAnteEntity.exPost = exPostEntity.id;
+    exAnteEntity.project = exPostEntity.project;
+  } else {
+    exAnteEntity.supply = exAnteEntity.supply.plus(event.params.amount);
+  }
+  exAnteEntity.save();
 }
 
 function getPostHolderEntityId(holderId: Bytes, exPostId: Bytes): Bytes {

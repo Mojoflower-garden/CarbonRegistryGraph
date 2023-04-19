@@ -153,16 +153,20 @@ export class ExAnteMinted__Params {
     this._event = event;
   }
 
-  get account(): Address {
-    return this._event.parameters[0].value.toAddress();
+  get exAnteTokenId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
   }
 
-  get tokenId(): BigInt {
+  get exPostTokenId(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
 
+  get account(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
   get amount(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[3].value.toBigInt();
   }
 }
 
@@ -265,6 +269,48 @@ export class ExchangeAnteForPost__Params {
 
   get exAnteAmountBurned(): BigInt {
     return this._event.parameters[3].value.toBigInt();
+  }
+}
+
+export class GenericSignatureValid extends ethereum.Event {
+  get params(): GenericSignatureValid__Params {
+    return new GenericSignatureValid__Params(this);
+  }
+}
+
+export class GenericSignatureValid__Params {
+  _event: GenericSignatureValid;
+
+  constructor(event: GenericSignatureValid) {
+    this._event = event;
+  }
+
+  get signature(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get payload(): GenericSignatureValidPayloadStruct {
+    return changetype<GenericSignatureValidPayloadStruct>(
+      this._event.parameters[1].value.toTuple()
+    );
+  }
+}
+
+export class GenericSignatureValidPayloadStruct extends ethereum.Tuple {
+  get deadline(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get description(): string {
+    return this[1].toString();
+  }
+
+  get signer(): Address {
+    return this[2].toAddress();
+  }
+
+  get nonce(): BigInt {
+    return this[3].toBigInt();
   }
 }
 
@@ -416,36 +462,6 @@ export class RoleRevoked__Params {
   }
 }
 
-export class SignedTransfer extends ethereum.Event {
-  get params(): SignedTransfer__Params {
-    return new SignedTransfer__Params(this);
-  }
-}
-
-export class SignedTransfer__Params {
-  _event: SignedTransfer;
-
-  constructor(event: SignedTransfer) {
-    this._event = event;
-  }
-
-  get from(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get to(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get tokenId(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
-  get amount(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
-  }
-}
-
 export class TransferBatch extends ethereum.Event {
   get params(): TransferBatch__Params {
     return new TransferBatch__Params(this);
@@ -477,6 +493,60 @@ export class TransferBatch__Params {
 
   get values(): Array<BigInt> {
     return this._event.parameters[4].value.toBigIntArray();
+  }
+}
+
+export class TransferSignatureValid extends ethereum.Event {
+  get params(): TransferSignatureValid__Params {
+    return new TransferSignatureValid__Params(this);
+  }
+}
+
+export class TransferSignatureValid__Params {
+  _event: TransferSignatureValid;
+
+  constructor(event: TransferSignatureValid) {
+    this._event = event;
+  }
+
+  get signature(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get payload(): TransferSignatureValidPayloadStruct {
+    return changetype<TransferSignatureValidPayloadStruct>(
+      this._event.parameters[1].value.toTuple()
+    );
+  }
+}
+
+export class TransferSignatureValidPayloadStruct extends ethereum.Tuple {
+  get deadline(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get description(): string {
+    return this[1].toString();
+  }
+
+  get signer(): Address {
+    return this[2].toAddress();
+  }
+
+  get to(): Address {
+    return this[3].toAddress();
+  }
+
+  get tokenId(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get amount(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get nonce(): BigInt {
+    return this[6].toBigInt();
   }
 }
 
