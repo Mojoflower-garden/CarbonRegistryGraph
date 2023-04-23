@@ -143,6 +143,15 @@ export class ExPost extends Entity {
     this.set("id", Value.fromBytes(value));
   }
 
+  get cancelledAmount(): BigInt {
+    let value = this.get("cancelledAmount");
+    return value!.toBigInt();
+  }
+
+  set cancelledAmount(value: BigInt) {
+    this.set("cancelledAmount", Value.fromBigInt(value));
+  }
+
   get tokenId(): BigInt {
     let value = this.get("tokenId");
     return value!.toBigInt();
@@ -460,6 +469,15 @@ export class Holder extends Entity {
 
   set retiredAmount(value: BigInt) {
     this.set("retiredAmount", Value.fromBigInt(value));
+  }
+
+  get cancelledAmount(): BigInt {
+    let value = this.get("cancelledAmount");
+    return value!.toBigInt();
+  }
+
+  set cancelledAmount(value: BigInt) {
+    this.set("cancelledAmount", Value.fromBigInt(value));
   }
 
   get exPostAmounts(): Array<Bytes> {
