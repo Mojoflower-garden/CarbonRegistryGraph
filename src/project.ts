@@ -4,6 +4,7 @@ import {
   TransferSingle as TransferSingleEvent,
   RetiredVintage as RetiredVintageEvent,
   ExAnteMinted as ExAnteMintedEvent,
+  CancelledCredits as CancelledCreditsEvent,
 } from "../generated/templates/Project/Project";
 import {
   ExPost,
@@ -36,6 +37,7 @@ export function handleExPostCreated(event: ExPostCreatedEvent): void {
   exPostEntity.verificationPeriodEnd = event.params.verificationPeriodEnd;
   exPostEntity.lastVerificationTimestamp = BigInt.zero();
   exPostEntity.retiredAmount = BigInt.zero();
+  exPostEntity.cancelledAmount = BigInt.zero();
   exPostEntity.project = project.id;
 
   exPostEntity.save();
@@ -67,6 +69,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
         );
         holderSender.address = event.params.from;
         holderSender.retiredAmount = BigInt.zero();
+        holderSender.cancelledAmount = BigInt.zero();
       }
       let exPostHolderSender = ExPostHolder.load(
         getPostHolderEntityId(holderSender.id, exPostEntity.id)
@@ -88,6 +91,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
         holder = new Holder(Bytes.fromHexString(event.params.to.toHexString()));
         holder.address = event.params.to;
         holder.retiredAmount = BigInt.zero();
+        holder.cancelledAmount = BigInt.zero();
       }
       let exPostHolder = ExPostHolder.load(
         getPostHolderEntityId(holder.id, exPostEntity.id)
@@ -123,6 +127,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
           );
           holderSender.address = event.params.from;
           holderSender.retiredAmount = BigInt.zero();
+          holderSender.cancelledAmount = BigInt.zero();
         }
 
         let exAnteHolderSender = ExAnteHolder.load(
@@ -147,6 +152,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
           );
           holder.address = event.params.to;
           holder.retiredAmount = BigInt.zero();
+          holder.cancelledAmount = BigInt.zero();
         }
 
         let exAnteHolder = ExAnteHolder.load(
@@ -190,6 +196,7 @@ export function handleRetirement(event: RetiredVintageEvent): void {
       Bytes.fromHexString(event.params.account.toHexString())
     );
     holder.address = event.params.account;
+    holder.cancelledAmount = BigInt.zero();
   }
   holder.retiredAmount = holder.retiredAmount.plus(event.params.amount);
   let exPostHolder = ExPostHolder.load(
@@ -216,6 +223,31 @@ export function handleRetirement(event: RetiredVintageEvent): void {
 
   holder.save();
   retirementEntity.save();
+  exPostEntity.save();
+}
+
+export function handleCancelledCredits(event: CancelledCreditsEvent): void {
+  const exPostEntityId = getHexExPostId(event.params.tokenId, event.address);
+  let exPostEntity = ExPost.load(exPostEntityId);
+  if (!exPostEntity) return;
+
+  exPostEntity.cancelledAmount = exPostEntity.cancelledAmount.plus(
+    event.params.amount
+  );
+  exPostEntity.save();
+
+  let holder = Holder.load(
+    Bytes.fromHexString(event.params.account.toHexString())
+  );
+  if (holder === null) {
+    holder = new Holder(
+      Bytes.fromHexString(event.params.account.toHexString())
+    );
+    holder.address = event.params.account;
+    holder.retiredAmount = BigInt.zero();
+  }
+  holder.cancelledAmount = holder.cancelledAmount.plus(event.params.amount);
+  holder.save();
   exPostEntity.save();
 }
 

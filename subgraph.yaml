@@ -56,5 +56,7 @@ templates:
           handler: handleRetirement
         - event: ExAnteMinted(indexed uint256,indexed uint256,indexed address,uint256)
           handler: handleExAnteMinted
+        - event: CancelledCredits(indexed address,indexed uint256,uint256,string,bytes)
+          handler: handleCancelledCredits
 
       file: ./src/project.ts

@@ -16,6 +16,7 @@ type Project @entity {
 
 type ExPost @entity {
   id: Bytes!
+  cancelledAmount: BigInt! # uint256
   tokenId: BigInt! # uint256
   supply: BigInt! # uint256
   serialization: String! # string
@@ -55,6 +56,7 @@ type Holder @entity {
   id: Bytes!
   address: Bytes! # address
   retiredAmount: BigInt! # uint256
+  cancelledAmount: BigInt! # uint256
   exPostAmounts: [ExPostHolder!]! @derivedFrom(field: "holder")
   exAnteAmounts: [ExAnteHolder!]! @derivedFrom(field: "holder")
   retirementCertificates: [RetirementCertificate!]!
