@@ -42,6 +42,7 @@ templates:
         - Holder
         - ExPostHolder
         - ExAnteHolder
+        - Cancellation
       abis:
         - name: Project
           file: Project/abis/Project.json

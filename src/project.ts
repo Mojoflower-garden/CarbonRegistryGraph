@@ -14,6 +14,7 @@ import {
   RetirementCertificate,
   ExAnte,
   ExAnteHolder,
+  Cancellation,
 } from "../generated/schema";
 import { BigInt, Bytes, Address } from "@graphprotocol/graph-ts";
 
@@ -247,6 +248,15 @@ export function handleCancelledCredits(event: CancelledCreditsEvent): void {
     holder.retiredAmount = BigInt.zero();
   }
   holder.cancelledAmount = holder.cancelledAmount.plus(event.params.amount);
+
+  let cancellationEntity = new Cancellation(event.transaction.hash);
+
+  cancellationEntity.amount = event.params.amount;
+  cancellationEntity.cancelledBy = holder.id;
+  cancellationEntity.exPost = exPostEntityId;
+  cancellationEntity.project = exPostEntity.project;
+
+  cancellationEntity.save();
   holder.save();
   exPostEntity.save();
 }
