@@ -79,6 +79,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
         exPostHolderSender.amount = exPostHolderSender.amount.minus(
           event.params.value
         );
+        exPostHolderSender.updatedAt = event.block.timestamp;
         exPostHolderSender.save();
       }
       holderSender.save();
@@ -105,7 +106,9 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
         exPostHolder.holder = holder.id;
         exPostHolder.amount = BigInt.zero();
         exPostHolder.retiredAmount = BigInt.zero();
+        exPostHolder.createdAt = event.block.timestamp;
       }
+      exPostHolder.updatedAt = event.block.timestamp;
       exPostHolder.amount = exPostHolder.amount.plus(event.params.value);
       exPostHolder.save();
       holder.save();
@@ -138,6 +141,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
           exAnteHolderSender.amount = exAnteHolderSender.amount.minus(
             event.params.value
           );
+          exAnteHolderSender.updatedAt = event.block.timestamp;
           exAnteHolderSender.save();
         }
         holderSender.save();
@@ -166,7 +170,9 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
           exAnteHolder.exAnte = tokenEntityId;
           exAnteHolder.holder = holder.id;
           exAnteHolder.amount = BigInt.zero();
+          exAnteHolder.createdAt = event.block.timestamp;
         }
+        exAnteHolder.updatedAt = event.block.timestamp;
         exAnteHolder.amount = exAnteHolder.amount.plus(event.params.value);
         exAnteHolder.save();
         holder.save();
@@ -207,6 +213,7 @@ export function handleRetirement(event: RetiredVintageEvent): void {
     exPostHolder.retiredAmount = exPostHolder.retiredAmount.plus(
       event.params.amount
     );
+    exPostHolder.updatedAt = event.block.timestamp;
     exPostHolder.save();
   }
   const retirementNftId = getHexExPostId(
@@ -222,6 +229,7 @@ export function handleRetirement(event: RetiredVintageEvent): void {
   retirementEntity.project = exPostEntity.project;
   retirementEntity.holder = holder.id;
   retirementEntity.createdAt = event.block.timestamp;
+  retirementEntity.serialization = exPostEntity.serialization;
 
   holder.save();
   retirementEntity.save();
@@ -257,6 +265,7 @@ export function handleCancelledCredits(event: CancelledCreditsEvent): void {
   cancellationEntity.exPost = exPostEntityId;
   cancellationEntity.project = exPostEntity.project;
   cancellationEntity.createdAt = event.block.timestamp;
+  cancellationEntity.serialization = exPostEntity.serialization;
 
   cancellationEntity.save();
   holder.save();
@@ -279,6 +288,7 @@ export function handleExAnteMinted(event: ExAnteMintedEvent): void {
     exAnteEntity.supply = event.params.amount;
     exAnteEntity.exPost = exPostEntity.id;
     exAnteEntity.project = exPostEntity.project;
+    exAnteEntity.serialization = exPostEntity.serialization;
   } else {
     exAnteEntity.supply = exAnteEntity.supply.plus(event.params.amount);
   }

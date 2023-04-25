@@ -247,9 +247,13 @@ export class ExPost extends Entity {
     this.set("project", Value.fromBytes(value));
   }
 
-  get exAnte(): Array<Bytes> {
+  get exAnte(): Bytes | null {
     let value = this.get("exAnte");
-    return value!.toBytesArray();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
   }
 
   get retirementCertificates(): Array<Bytes> {
@@ -315,6 +319,15 @@ export class ExAnte extends Entity {
 
   set supply(value: BigInt) {
     this.set("supply", Value.fromBigInt(value));
+  }
+
+  get serialization(): string {
+    let value = this.get("serialization");
+    return value!.toString();
+  }
+
+  set serialization(value: string) {
+    this.set("serialization", Value.fromString(value));
   }
 
   get exPost(): Bytes {
@@ -390,6 +403,15 @@ export class Cancellation extends Entity {
 
   set exPost(value: Bytes) {
     this.set("exPost", Value.fromBytes(value));
+  }
+
+  get serialization(): string {
+    let value = this.get("serialization");
+    return value!.toString();
+  }
+
+  set serialization(value: string) {
+    this.set("serialization", Value.fromString(value));
   }
 
   get cancelledBy(): Bytes {
@@ -492,6 +514,15 @@ export class RetirementCertificate extends Entity {
     this.set("exPost", Value.fromBytes(value));
   }
 
+  get serialization(): string {
+    let value = this.get("serialization");
+    return value!.toString();
+  }
+
+  set serialization(value: string) {
+    this.set("serialization", Value.fromString(value));
+  }
+
   get holder(): Bytes {
     let value = this.get("holder");
     return value!.toBytes();
@@ -578,6 +609,11 @@ export class Holder extends Entity {
     this.set("cancelledAmount", Value.fromBigInt(value));
   }
 
+  get cancellations(): Array<Bytes> {
+    let value = this.get("cancellations");
+    return value!.toBytesArray();
+  }
+
   get exPostAmounts(): Array<Bytes> {
     let value = this.get("exPostAmounts");
     return value!.toBytesArray();
@@ -662,6 +698,24 @@ export class ExPostHolder extends Entity {
   set retiredAmount(value: BigInt) {
     this.set("retiredAmount", Value.fromBigInt(value));
   }
+
+  get updatedAt(): BigInt {
+    let value = this.get("updatedAt");
+    return value!.toBigInt();
+  }
+
+  set updatedAt(value: BigInt) {
+    this.set("updatedAt", Value.fromBigInt(value));
+  }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    return value!.toBigInt();
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
+  }
 }
 
 export class ExAnteHolder extends Entity {
@@ -722,5 +776,23 @@ export class ExAnteHolder extends Entity {
 
   set amount(value: BigInt) {
     this.set("amount", Value.fromBigInt(value));
+  }
+
+  get updatedAt(): BigInt {
+    let value = this.get("updatedAt");
+    return value!.toBigInt();
+  }
+
+  set updatedAt(value: BigInt) {
+    this.set("updatedAt", Value.fromBigInt(value));
+  }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    return value!.toBigInt();
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
   }
 }

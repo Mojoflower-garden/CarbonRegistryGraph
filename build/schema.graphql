@@ -28,7 +28,7 @@ type ExPost @entity {
   lastVerificationTimestamp: BigInt! # uint256
   retiredAmount: BigInt! # uint256
   project: Project!
-  exAnte: [ExAnte!]! @derivedFrom(field: "exPost")
+  exAnte: ExAnte @derivedFrom(field: "exPost")
   retirementCertificates: [RetirementCertificate!]!
     @derivedFrom(field: "exPost")
   cancellations: [Cancellation!]! @derivedFrom(field: "exPost")
@@ -39,6 +39,7 @@ type ExAnte @entity {
   id: Bytes!
   tokenId: BigInt! # uint256
   supply: BigInt! # uint256
+  serialization: String! # string
   exPost: ExPost!
   holders: [ExAnteHolder!]! @derivedFrom(field: "exAnte")
   project: Project!
@@ -48,8 +49,10 @@ type Cancellation @entity {
   id: Bytes!
   amount: BigInt! # uint256
   exPost: ExPost!
+  serialization: String! # string
   cancelledBy: Holder!
   project: Project!
+  createdAt: BigInt! # uint256
 }
 
 type RetirementCertificate @entity {
@@ -58,8 +61,10 @@ type RetirementCertificate @entity {
   amount: BigInt! # uint256
   retiree: Holder!
   exPost: ExPost!
+  serialization: String! # string
   holder: Holder!
   project: Project!
+  createdAt: BigInt! # uint256
 }
 
 type Holder @entity {
@@ -67,6 +72,7 @@ type Holder @entity {
   address: Bytes! # address
   retiredAmount: BigInt! # uint256
   cancelledAmount: BigInt! # uint256
+  cancellations: [Cancellation!]! @derivedFrom(field: "cancelledBy")
   exPostAmounts: [ExPostHolder!]! @derivedFrom(field: "holder")
   exAnteAmounts: [ExAnteHolder!]! @derivedFrom(field: "holder")
   retirementCertificates: [RetirementCertificate!]!
@@ -79,6 +85,8 @@ type ExPostHolder @entity {
   holder: Holder!
   amount: BigInt! # uint256
   retiredAmount: BigInt! # uint256
+  updatedAt: BigInt! # uint256
+  createdAt: BigInt! # uint256
 }
 
 type ExAnteHolder @entity {
@@ -86,4 +94,6 @@ type ExAnteHolder @entity {
   exAnte: ExAnte!
   holder: Holder!
   amount: BigInt! # uint256
+  updatedAt: BigInt! # uint256
+  createdAt: BigInt! # uint256
 }
