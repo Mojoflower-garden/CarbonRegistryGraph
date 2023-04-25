@@ -10,6 +10,7 @@ type Project @entity {
   transactionHash: Bytes!
   exPosts: [ExPost!]! @derivedFrom(field: "project")
   exAntes: [ExAnte!]! @derivedFrom(field: "project")
+  cancellations: [Cancellation!]! @derivedFrom(field: "project")
   retirementCertificates: [RetirementCertificate!]!
     @derivedFrom(field: "project")
 }
@@ -30,6 +31,7 @@ type ExPost @entity {
   exAnte: [ExAnte!]! @derivedFrom(field: "exPost")
   retirementCertificates: [RetirementCertificate!]!
     @derivedFrom(field: "exPost")
+  cancellations: [Cancellation!]! @derivedFrom(field: "exPost")
   holders: [ExPostHolder!]! @derivedFrom(field: "exPost")
 }
 
@@ -39,6 +41,14 @@ type ExAnte @entity {
   supply: BigInt! # uint256
   exPost: ExPost!
   holders: [ExAnteHolder!]! @derivedFrom(field: "exAnte")
+  project: Project!
+}
+
+type Cancellation @entity {
+  id: Bytes!
+  amount: BigInt! # uint256
+  exPost: ExPost!
+  cancelledBy: Holder!
   project: Project!
 }
 
