@@ -106,6 +106,11 @@ export class Project extends Entity {
     return value!.toBytesArray();
   }
 
+  get cancellations(): Array<Bytes> {
+    let value = this.get("cancellations");
+    return value!.toBytesArray();
+  }
+
   get retirementCertificates(): Array<Bytes> {
     let value = this.get("retirementCertificates");
     return value!.toBytesArray();
@@ -249,6 +254,11 @@ export class ExPost extends Entity {
 
   get retirementCertificates(): Array<Bytes> {
     let value = this.get("retirementCertificates");
+    return value!.toBytesArray();
+  }
+
+  get cancellations(): Array<Bytes> {
+    let value = this.get("cancellations");
     return value!.toBytesArray();
   }
 
@@ -399,6 +409,15 @@ export class Cancellation extends Entity {
   set project(value: Bytes) {
     this.set("project", Value.fromBytes(value));
   }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    return value!.toBigInt();
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
+  }
 }
 
 export class RetirementCertificate extends Entity {
@@ -489,6 +508,15 @@ export class RetirementCertificate extends Entity {
 
   set project(value: Bytes) {
     this.set("project", Value.fromBytes(value));
+  }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    return value!.toBigInt();
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
   }
 }
 

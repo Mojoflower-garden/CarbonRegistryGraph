@@ -50,6 +50,7 @@ type Cancellation @entity {
   exPost: ExPost!
   cancelledBy: Holder!
   project: Project!
+  createdAt: BigInt! # uint256
 }
 
 type RetirementCertificate @entity {
@@ -60,6 +61,7 @@ type RetirementCertificate @entity {
   exPost: ExPost!
   holder: Holder!
   project: Project!
+  createdAt: BigInt! # uint256
 }
 
 type Holder @entity {
