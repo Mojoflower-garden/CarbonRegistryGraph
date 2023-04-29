@@ -8,9 +8,9 @@ dataSources:
     name: CarbonContractRegistry
     network: matic
     source:
-      address: "0xCe08a19a00a24F0937A63A0a8FaC3169457C085F"
+      address: "0x9f87988FF45E9b58ae30fA1685088460125a7d8A"
       abi: CarbonContractRegistry
-      startBlock: 42036635
+      startBlock: 42035067
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
