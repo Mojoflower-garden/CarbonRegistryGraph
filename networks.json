@@ -4,5 +4,10 @@
       "address": "0x8fC136A4E9d51Ad6DfEF27aD2B467185FF403330",
       "startBlock": 34337718
     }
+  }, "matic":{
+    "CarbonContractRegistry": {
+      "address": "0x9f87988FF45E9b58ae30fA1685088460125a7d8A",
+      "startBlock": 42035067
+    }
   }
 }
