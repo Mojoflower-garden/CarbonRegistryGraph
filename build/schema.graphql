@@ -52,6 +52,7 @@ type Cancellation @entity {
   serialization: String! # string
   cancelledBy: Holder!
   project: Project!
+  transactionHash: Bytes!
   createdAt: BigInt! # uint256
 }
 
@@ -64,6 +65,7 @@ type RetirementCertificate @entity {
   serialization: String! # string
   holder: Holder!
   project: Project!
+  transactionHash: Bytes!
   createdAt: BigInt! # uint256
 }
 

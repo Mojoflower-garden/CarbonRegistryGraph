@@ -432,6 +432,15 @@ export class Cancellation extends Entity {
     this.set("project", Value.fromBytes(value));
   }
 
+  get transactionHash(): Bytes {
+    let value = this.get("transactionHash");
+    return value!.toBytes();
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+
   get createdAt(): BigInt {
     let value = this.get("createdAt");
     return value!.toBigInt();
@@ -539,6 +548,15 @@ export class RetirementCertificate extends Entity {
 
   set project(value: Bytes) {
     this.set("project", Value.fromBytes(value));
+  }
+
+  get transactionHash(): Bytes {
+    let value = this.get("transactionHash");
+    return value!.toBytes();
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
   }
 
   get createdAt(): BigInt {

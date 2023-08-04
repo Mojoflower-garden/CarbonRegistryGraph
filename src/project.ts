@@ -230,6 +230,7 @@ export function handleRetirement(event: RetiredVintageEvent): void {
   retirementEntity.holder = holder.id;
   retirementEntity.createdAt = event.block.timestamp;
   retirementEntity.serialization = exPostEntity.serialization;
+  retirementEntity.transactionHash = event.transaction.hash;
 
   holder.save();
   retirementEntity.save();
@@ -266,6 +267,7 @@ export function handleCancelledCredits(event: CancelledCreditsEvent): void {
   cancellationEntity.project = exPostEntity.project;
   cancellationEntity.createdAt = event.block.timestamp;
   cancellationEntity.serialization = exPostEntity.serialization;
+  cancellationEntity.transactionHash = event.transaction.hash;
 
   cancellationEntity.save();
   holder.save();
