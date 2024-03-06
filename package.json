@@ -8,7 +8,7 @@
     "build:polygon:test": "graph build ./testPolygonSubgraph.yaml",
     "deploy:polygon": "graph deploy --node https://api.thegraph.com/deploy/ skjaldbaka17/carbon-registry-polygon ./polygonSubgraph.yaml",
     "deploy-local:polygon": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 skjaldbaka17/carbon-registry-polygon",
-    "deploy:polygon:test": "graph deploy --node https://api.thegraph.com/deploy/ skjaldbaka17/carbon-registry-polygon ./testPolygonSubgraph.yaml",
+    "deploy:polygon:test": "graph deploy --node https://api.thegraph.com/deploy/ skjaldbaka17/carbon-registry-main-test ./testPolygonSubgraph.yaml",
     "deploy:mumbai": "graph deploy --node https://api.thegraph.com/deploy/ skjaldbaka17/carbon-registry-test ./mumbaiSubgraph.yaml",
     "build:deploy:polygon": "npm run build:polygon && npm run deploy:polygon",
     "build:deploy:polygon:test": "npm run build:polygon:test && npm run deploy:polygon:test",
