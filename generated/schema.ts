@@ -321,6 +321,15 @@ export class ExAnte extends Entity {
     this.set("supply", Value.fromBigInt(value));
   }
 
+  get cancelledAmount(): BigInt {
+    let value = this.get("cancelledAmount");
+    return value!.toBigInt();
+  }
+
+  set cancelledAmount(value: BigInt) {
+    this.set("cancelledAmount", Value.fromBigInt(value));
+  }
+
   get serialization(): string {
     let value = this.get("serialization");
     return value!.toString();
@@ -351,6 +360,11 @@ export class ExAnte extends Entity {
 
   set project(value: Bytes) {
     this.set("project", Value.fromBytes(value));
+  }
+
+  get cancellations(): Array<Bytes> {
+    let value = this.get("cancellations");
+    return value!.toBytesArray();
   }
 }
 
@@ -396,13 +410,38 @@ export class Cancellation extends Entity {
     this.set("amount", Value.fromBigInt(value));
   }
 
-  get exPost(): Bytes {
+  get exPost(): Bytes | null {
     let value = this.get("exPost");
-    return value!.toBytes();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
   }
 
-  set exPost(value: Bytes) {
-    this.set("exPost", Value.fromBytes(value));
+  set exPost(value: Bytes | null) {
+    if (!value) {
+      this.unset("exPost");
+    } else {
+      this.set("exPost", Value.fromBytes(<Bytes>value));
+    }
+  }
+
+  get exAnte(): Bytes | null {
+    let value = this.get("exAnte");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set exAnte(value: Bytes | null) {
+    if (!value) {
+      this.unset("exAnte");
+    } else {
+      this.set("exAnte", Value.fromBytes(<Bytes>value));
+    }
   }
 
   get serialization(): string {
