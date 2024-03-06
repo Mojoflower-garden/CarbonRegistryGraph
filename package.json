@@ -3,12 +3,19 @@
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
-    "build": "graph build",
-    "deploy:polygon": "graph deploy --node https://api.thegraph.com/deploy/ skjaldbaka17/carbon-registry-polygon",
+    "build:mumbai": "graph build ./mumbaiSubgraph.yaml",
+    "build:polygon": "graph build ./polygonSubgraph.yaml",
+    "build:polygon:test": "graph build ./testPolygonSubgraph.yaml",
+    "deploy:polygon": "graph deploy --node https://api.thegraph.com/deploy/ skjaldbaka17/carbon-registry-polygon ./polygonSubgraph.yaml",
+    "deploy-local:polygon": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 skjaldbaka17/carbon-registry-polygon",
+    "deploy:polygon:test": "graph deploy --node https://api.thegraph.com/deploy/ skjaldbaka17/carbon-registry-polygon ./testPolygonSubgraph.yaml",
+    "deploy:mumbai": "graph deploy --node https://api.thegraph.com/deploy/ skjaldbaka17/carbon-registry-test ./mumbaiSubgraph.yaml",
+    "build:deploy:polygon": "npm run build:polygon && npm run deploy:polygon",
+    "build:deploy:polygon:test": "npm run build:polygon:test && npm run deploy:polygon:test",
+    "build:deploy:mumbai": "npm run build:mumbai && npm run deploy:mumbai",
+    "build:deploy:all": "npm run build:deploy:polygon && npm run build:deploy:mumbai && npm run build:deploy:polygon:test",
     "create-local:polygon": "graph create --node http://localhost:8020/ skjaldbaka17/carbon-registry-polygon",
     "remove-local:polygon": "graph remove --node http://localhost:8020/ skjaldbaka17/carbon-registry-polygon",
-    "deploy-local:polygon": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 skjaldbaka17/carbon-registry-polygon",
-    "deploy:mumbai": "graph deploy --node https://api.thegraph.com/deploy/ skjaldbaka17/carbon-registry-test",
     "create-local:mumbai": "graph create --node http://localhost:8020/ skjaldbaka17/carbon-registry-test",
     "remove-local:mumbai": "graph remove --node http://localhost:8020/ skjaldbaka17/carbon-registry-test",
     "deploy-local:mumbai": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 skjaldbaka17/carbon-registry-test",
@@ -18,6 +25,7 @@
     "@graphprotocol/graph-cli": "0.46.1",
     "@graphprotocol/graph-ts": "0.29.1"
   },
-  "devDependencies": { "matchstick-as": "0.5.0" }
+  "devDependencies": {
+    "matchstick-as": "0.5.0"
+  }
 }
-

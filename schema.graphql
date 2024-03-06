@@ -39,16 +39,19 @@ type ExAnte @entity {
   id: Bytes!
   tokenId: BigInt! # uint256
   supply: BigInt! # uint256
+  cancelledAmount: BigInt! # uint256
   serialization: String! # string
   exPost: ExPost!
   holders: [ExAnteHolder!]! @derivedFrom(field: "exAnte")
   project: Project!
+  cancellations: [Cancellation!]! @derivedFrom(field: "exAnte")
 }
 
 type Cancellation @entity {
   id: Bytes!
   amount: BigInt! # uint256
-  exPost: ExPost!
+  exPost: ExPost
+  exAnte: ExAnte
   serialization: String! # string
   cancelledBy: Holder!
   project: Project!

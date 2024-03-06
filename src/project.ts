@@ -238,40 +238,72 @@ export function handleRetirement(event: RetiredVintageEvent): void {
 }
 
 export function handleCancelledCredits(event: CancelledCreditsEvent): void {
-  const exPostEntityId = getHexExPostId(event.params.tokenId, event.address);
-  let exPostEntity = ExPost.load(exPostEntityId);
-  if (!exPostEntity) return;
+  const entityId = getHexExPostId(event.params.tokenId, event.address);
+  const exAnteEntity = ExAnte.load(entityId);
+  let exPostEntity = ExPost.load(entityId);
+  if (exPostEntity) {
+    exPostEntity.cancelledAmount = exPostEntity.cancelledAmount.plus(
+      event.params.amount
+    );
+    exPostEntity.save();
 
-  exPostEntity.cancelledAmount = exPostEntity.cancelledAmount.plus(
-    event.params.amount
-  );
-  exPostEntity.save();
-
-  let holder = Holder.load(
-    Bytes.fromHexString(event.params.account.toHexString())
-  );
-  if (holder === null) {
-    holder = new Holder(
+    let holder = Holder.load(
       Bytes.fromHexString(event.params.account.toHexString())
     );
-    holder.address = event.params.account;
-    holder.retiredAmount = BigInt.zero();
+    if (holder === null) {
+      holder = new Holder(
+        Bytes.fromHexString(event.params.account.toHexString())
+      );
+      holder.address = event.params.account;
+      holder.retiredAmount = BigInt.zero();
+    }
+    holder.cancelledAmount = holder.cancelledAmount.plus(event.params.amount);
+
+    let cancellationEntity = new Cancellation(event.transaction.hash);
+
+    cancellationEntity.amount = event.params.amount;
+    cancellationEntity.cancelledBy = holder.id;
+    cancellationEntity.exPost = entityId;
+    cancellationEntity.project = exPostEntity.project;
+    cancellationEntity.createdAt = event.block.timestamp;
+    cancellationEntity.serialization = exPostEntity.serialization;
+    cancellationEntity.transactionHash = event.transaction.hash;
+
+    cancellationEntity.save();
+    holder.save();
+    exPostEntity.save();
+  } else if (exAnteEntity) {
+    exAnteEntity.cancelledAmount = exAnteEntity.cancelledAmount.plus(
+      event.params.amount
+    );
+    exAnteEntity.save();
+
+    let holder = Holder.load(
+      Bytes.fromHexString(event.params.account.toHexString())
+    );
+    if (holder === null) {
+      holder = new Holder(
+        Bytes.fromHexString(event.params.account.toHexString())
+      );
+      holder.address = event.params.account;
+      holder.retiredAmount = BigInt.zero();
+    }
+    holder.cancelledAmount = holder.cancelledAmount.plus(event.params.amount);
+
+    let cancellationEntity = new Cancellation(event.transaction.hash);
+
+    cancellationEntity.amount = event.params.amount;
+    cancellationEntity.cancelledBy = holder.id;
+    cancellationEntity.exAnte = entityId;
+    cancellationEntity.project = exAnteEntity.project;
+    cancellationEntity.createdAt = event.block.timestamp;
+    cancellationEntity.serialization = exAnteEntity.serialization;
+    cancellationEntity.transactionHash = event.transaction.hash;
+
+    cancellationEntity.save();
+    holder.save();
+    exAnteEntity.save();
   }
-  holder.cancelledAmount = holder.cancelledAmount.plus(event.params.amount);
-
-  let cancellationEntity = new Cancellation(event.transaction.hash);
-
-  cancellationEntity.amount = event.params.amount;
-  cancellationEntity.cancelledBy = holder.id;
-  cancellationEntity.exPost = exPostEntityId;
-  cancellationEntity.project = exPostEntity.project;
-  cancellationEntity.createdAt = event.block.timestamp;
-  cancellationEntity.serialization = exPostEntity.serialization;
-  cancellationEntity.transactionHash = event.transaction.hash;
-
-  cancellationEntity.save();
-  holder.save();
-  exPostEntity.save();
 }
 
 export function handleExAnteMinted(event: ExAnteMintedEvent): void {
@@ -291,6 +323,7 @@ export function handleExAnteMinted(event: ExAnteMintedEvent): void {
     exAnteEntity.exPost = exPostEntity.id;
     exAnteEntity.project = exPostEntity.project;
     exAnteEntity.serialization = exPostEntity.serialization;
+    exAnteEntity.cancelledAmount = BigInt.zero();
   } else {
     exAnteEntity.supply = exAnteEntity.supply.plus(event.params.amount);
   }
